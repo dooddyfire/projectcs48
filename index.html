@@ -1,0 +1,394 @@
+{% extends 'base.html' %}
+{% include 'header.html' %}
+
+
+
+{% block title %} Home {% endblock %}
+
+
+
+{% block body %}
+
+
+<style>
+
+
+   .swal2-container{
+   z-index:9999999999;
+   }
+   
+   .loader {
+   position: fixed;
+   z-index: 99;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   background: #c57e7d;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   }
+   
+   .loader > img {
+   width: 50px;
+   height: auto;
+   }
+   
+   .loader.hidden {
+   animation: fadeOut 1s;
+   animation-fill-mode: forwards;
+   }
+   @keyframes fadeOut {
+   100% {
+   opacity: 0;
+   visibility: hidden;
+   }
+   }
+   
+   </style>
+   </head>
+   
+   <section>
+   
+   
+   
+   <div class="loader">
+   <center>
+   <img src="https://c.tenor.com/I6kN-6X7nhAAAAAj/loading-buffering.gif" alt="Loading . . ." height="10%">
+   </center>
+   </div>
+   
+   <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+   <script>
+   function loaddone() {
+   const Toast = Swal.mixin({
+   toast: true,
+   position: 'top-end',
+   showConfirmButton: false,
+   timer: 2500,
+   timerProgressBar: true,
+   didOpen: (toast) => {
+   toast.addEventListener('mouseenter', Swal.stopTimer)
+   toast.addEventListener('mouseleave', Swal.resumeTimer)
+   }
+   })
+   Toast.fire({
+   icon: 'success',
+   title: 'โหลดหน้าเว็บเสร็จสิ้น'
+   })
+   }
+   
+   window.addEventListener("load", function () {
+   const loader = document.querySelector(".loader");
+   loader.className += " hidden",loaddone();
+   });
+   
+   
+   
+   </script>
+   
+</section>
+
+
+<div class="container">
+    <div class="row">
+        <div class="col md-12">
+
+            <div class="jumbotron p-3">
+
+                <h2>Manage <b>Admin </b>  <a href="https://supapongai.com/" class='float-right' target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
+                </h2>
+
+
+                {% with messages = get_flashed_messages() %}
+
+                {% if messages %}
+
+                {% for message in messages %}
+
+                <div class="alert alert-success alert-dismissable" role="alert">
+
+                    <button type="button" class="close" data-dismiss="alert" aria-label="close">
+
+                        <span aria-hidden="true">x</span>
+
+                    </button>
+
+                    <script>
+                       Swal.fire(
+                           'Good job!',
+                           'Update Successful!',
+                           'success'
+                           )
+                    </script>
+
+
+                {{message}}
+
+
+                </div>
+
+
+                {% endfor %}
+
+                {% endif %}
+                {% endwith %}
+
+                {{pagination.info}}
+                {{ pagination.links }}
+               
+                <table class="table table-hover table-dark">
+
+                    <tr>
+
+                        <th>USERID</th>
+                        <th>Name</th>
+                        <th>Food_Detect</th>
+                        <th>Date</th>
+                        <th>Portion</th>
+                        <th>Action</th>
+
+                    </tr>
+
+                    
+                   {% for row in employees %}
+                    <tr>
+                  
+
+                        <td>{{row[0]}}</td>
+                        <td>{{row[4]}}</td>
+                        <td>{{row[1]}}</td>
+                        <td>{{row[2]}}</td>
+                        <td>{{row[3]}}</td>
+                        
+                        <td>
+                            <a href="/update" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit">Edit</a>
+                            <!--<a href="/delete" class="btn btn-danger btn-xs" onclick="return confirm('Are You Sure To Delete ?')">Delete</a>-->
+                            <a href="/delete" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#modaldelete">Delete</a>
+
+                        </td>
+
+                    </tr>
+
+
+                  <!-- Modal Edit Employee-->
+<div id="modaledit" class="modal fade" role="dialog">
+   <div class="modal-dialog">
+
+
+      <div class="modal-content">
+
+
+         <div class="modal-header">
+
+
+            <h4 class="modal-title">Update Information</h4>
+
+
+         </div>
+
+
+         <div class="modal-body">
+
+
+            <form action="{{url_for('update')}}" method="POST">
+
+
+               <div class="form-group">
+
+
+                  <label>User ID:</label>
+                   <input type="hidden"  name="id" value="{{row[0]}}" >
+
+                  <input type="text" class="form-control" name="user_id" value="{{row[0]}}">
+
+
+               </div>
+
+               <div class="form-group">
+
+
+                <label>Date:</label>
+
+                <input type="text" class="form-control" name="date" value="{{row[2]}}">
+
+
+             </div>
+
+
+
+               <!--<div class="form-group">
+
+
+                  <label>Food Detect:</label>
+
+                  <input type="text" class="form-control" name="food_detect" value="{{row[1]}}">
+
+
+               </div>-->
+
+
+               <div class="form-group">
+
+
+                  <label>Portion:</label>
+
+                  <input type="text" class="form-control" name="portion" value="{{row[3]}}">
+
+
+               </div>
+
+
+               <div class="form-group">
+
+
+                  <button class="btn btn-primary" type="submit">Update</button>
+
+
+               </div>
+
+
+            </form>
+
+
+         </div>
+
+
+         <div class="modal-footer">
+
+
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+
+         </div>
+
+
+      </div>
+
+
+   </div>
+
+</div>
+
+
+                  <!-- Modal Delete-->
+                  <div id="modaldelete" class="modal fade" role="dialog">
+                     <div class="modal-dialog">
+                  
+                  
+                        <div class="modal-content">
+                  
+                  
+                           <div class="modal-header">
+                  
+                  
+                              <h4 class="modal-title">Delete Information</h4>
+                  
+                  
+                           </div>
+                  
+                  
+                           <div class="modal-body">
+                  
+                  
+                              <form action="{{url_for('delete')}}" method="POST">
+                  
+                  
+                                 <div class="form-group">
+                  
+                  
+                                    <label>User ID:</label>
+                                     <input type="hidden"  name="id" value="{{row[0]}}" >
+                  
+                                    <input type="text" class="form-control" name="user_id" value="{{row[0]}}">
+                  
+                  
+                                 </div>
+                  
+                                 <div class="form-group">
+                  
+                  
+                                  <label>Date:</label>
+                  
+                                  <input type="text" class="form-control" name="date" value="{{row[2]}}">
+                  
+                  
+                               </div>
+                  
+                  
+                  
+                                 <!--<div class="form-group">
+                  
+                  
+                                    <label>Food Detect:</label>
+                  
+                                    <input type="text" class="form-control" name="food_detect" value="{{row[1]}}">
+                  
+                  
+                                 </div>-->
+                  
+                  
+             
+                  
+                  
+                                 <div class="form-group">
+                  
+                  
+                                    <button class="btn btn-danger" type="submit">Delete</button>
+                  
+                  
+                                 </div>
+                  
+                  
+                              </form>
+                  
+                  
+                           </div>
+                  
+                  
+                           <div class="modal-footer">
+                  
+                  
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  
+                  
+                           </div>
+                  
+                  
+                        </div>
+                  
+                  
+                     </div>
+                  
+                  </div>
+
+
+                    {% endfor %}
+
+
+                </table>
+
+
+
+            </div>
+
+
+
+                  <!-- Modal Add Employee-->
+
+
+
+
+
+
+
+
+        </div>
+
+    </div>
+
+
+</div>
+
+{% endblock %}
